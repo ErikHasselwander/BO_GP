@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib import rc
 plt.rcParams["font.size"] = 17
-rc('text', usetex=True)
+# rc('text', usetex=True)
 import numpy as np
 import GPy
 import GPyOpt
@@ -33,9 +33,9 @@ logger = logging.getLogger("Driver").getChild("gpOptim/gpOpt.py")
 #>>>> SETTINGS & PROBLEM DEFINITION -----------------------------------------
 sigma_d = 0.01       #sdev of the white noise in the measured data   
 whichOptim = 'min'  #find 'max' or 'min' of f(x)?
-kernelType = 'Matern52'  #'RBF', 'Matern52'
+kernelType = 'RBF'  #'RBF', 'Matern52'
 #admissible range of parameters
-qBound = [[95,110], [85,100], [75,85], [55,65]] 
+qBound = [[-50,50]]*2
 qMaxDist = norm([q[1]-q[0] for q in qBound])
 nPar = np.shape(qBound)[0] #number of parameters, p  dimension of x={x1,x2,...,xp} where y=f(x)
 nGPinit = 1   #minimum number of GP samples in the list to start BO-GP algorithm
@@ -118,7 +118,7 @@ def my_convergence_plot(xList, yList, figDir, figName):
     plt.semilogy(range(2, nData+1), xDistList, '-ob', lw=2)
     # plt.title("Distance between 2 consecutive parameter samples",fontsize=20)
     plt.xlabel(r'${\rm iteration}~i$', fontsize=20)
-    plt.ylabel(r'$\| \mbox{\boldmath{$q$}}_i - \mbox{\boldmath{$q$}}_{i-1} \|_2$', fontsize=22)
+    plt.ylabel(r'$\| \mathbf{q}_i - \mathbf{q}_{i-1} \|_2$', fontsize=22)
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     plt.grid(True)
@@ -134,7 +134,7 @@ def my_convergence_plot(xList, yList, figDir, figName):
     fig = plt.gcf()
     DPI = fig.get_dpi()
     fig.set_size_inches(600/float(DPI), 1200/float(DPI))
-    plt.savefig(figDir + "/" + figName + '.pdf', bbox_inches='tight')
+    plt.savefig(figDir / (figName + '.pdf'), bbox_inches='tight')
     logger.info('save: %s/%s.pdf' % (figDir, figName))
     return xDistList, yBestList
 #
@@ -292,13 +292,13 @@ def gpOpt2d_postProc(xGP, yGP, bounds, plotOpts, final=False, kernelType_=kernel
         figName = plotOpts['figName']
     
     if "varFlag" in plotOpts.keys():
-        figName = "var_" + figName # considering copatibility with make_movie.sh
-    figSave = figDir + "/" + figName
+        figName = "var_" + figName + '.pdf' # considering copatibility with make_movie.sh
+    figSave = figDir / figName
     
     fig = plt.gcf()
     # DPI = fig.get_dpi()
     # fig.set_size_inches(figSize/float(DPI),figSize/float(DPI))
-    plt.savefig(figSave + '.pdf', bbox_inches='tight')
+    plt.savefig(figSave, bbox_inches='tight')
     logger.info("save: %s.pdf" % figSave)
 #
 def gpyPlotter_1D(meanPred, covarPred, xGP, yGP, xTest_, plotOpts):
@@ -624,24 +624,15 @@ def gpSurface_plot(xList, yList, nData, path2figs="../figs", Rlim=None, \
         #plot in 2D subspace of the parameters space
         plotOpts={'figDir':path2figs,
                   'figName':'gp%01dD_%02d'% (nPar,nData)}
-        if Rlim:
-            plotOpts["Rmin"]=Rlim[0]
-            plotOpts["Rmax"]=Rlim[1]
         if var==True:
             plotOpts["varFlag"]=True
         gpOpt2d_postProc(xGP,yGP,bounds,plotOpts,final=final)
     elif nPar==1:
-        if Rlim==None:
-            Rmin=0.05
-            Rmax=10
-        else:
-            Rmin=Rlim[0]
-            Rmax=Rlim[1]
         # nTest=100   #no of test points, only for plot
         plotOpts={'figDir':path2figs,
                   'figName':'gp1D_%02d' % (nData),
                   'arbitSample':'no',
-                  'ylim':[Rmin,Rmax]} # NEED TO BE TUNED
+                  } # NEED TO BE TUNED
         gpOpt1d_postProc(xGP,yGP,bounds,plotOpts)
     else:
         logger.error("nPar should be >= 1")
