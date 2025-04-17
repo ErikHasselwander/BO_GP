@@ -25,6 +25,8 @@ from numpy.linalg import norm
 from matplotlib.colors import Normalize
 import logging
 
+
+
 # %% logging
 logger = logging.getLogger("Driver").getChild("gpOptim/gpOpt.py")
 
@@ -35,7 +37,36 @@ sigma_d = 0.01       #sdev of the white noise in the measured data
 whichOptim = 'min'  #find 'max' or 'min' of f(x)?
 kernelType = 'RBF'  #'RBF', 'Matern52'
 #admissible range of parameters
-qBound = [[-50,50]]*2
+var_range = [
+    [0.275, 0.725],
+    [0.3, 0.8],
+    [10, 60],
+    [0.05, 0.75],
+    [0.05, 0.75],
+    [0.05, 0.5],
+    [0.05, 0.5],
+    [0.05, 0.5],
+    [0.05, 0.5],
+    [0.05, 0.5],
+    [0.05, 0.5],
+    [1, 4],
+]
+var_names = [
+    "xMidFactor",
+    "rMidFactor",
+    "alpha",
+    "lambda1",
+    "lambda2",
+    "lambda3",
+    "lambda4",
+    "lambda5",
+    "lambda6",
+    "lambda7",
+    "lambda8",
+    "AR",
+]
+
+qBound = var_range
 qMaxDist = norm([q[1]-q[0] for q in qBound])
 nPar = np.shape(qBound)[0] #number of parameters, p  dimension of x={x1,x2,...,xp} where y=f(x)
 nGPinit = 1   #minimum number of GP samples in the list to start BO-GP algorithm
@@ -75,10 +106,10 @@ def update_GPsamples(gpOutputFile, xList, yList, xNext, yNext):
         Update the existing list of GP samples with the recent sample & response
     """
     F2 = open(gpOutputFile, 'w')
-    F2.write('#List of GP samples." \n')
+    F2.write('#List of GP samples.\n')
     tmp = '#iter' + '\t'
-    for i in range(len(xNext)):
-        tmp += 'p' + str(i+1) + '\t'
+    for variable in var_names:
+        tmp += variable + '\t'
     tmp += 'response\n'
     F2.write(tmp)
     nData = xList.shape[0]
