@@ -1,0 +1,5 @@
+numpy
+GPy
+GPyOpt
+matplotlib
+pandas
