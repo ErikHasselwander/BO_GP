@@ -234,10 +234,8 @@ class StarManager:
                         row.append("")
 
                     key, value, unit = row
-                    results_dict[key] = {
-                        "value": self.__convertValue(value),
-                        "unit": unit,
-                    }
+                    results_dict[key] = self.__convertValue(value),
+                    
         except:
             return {}
 
