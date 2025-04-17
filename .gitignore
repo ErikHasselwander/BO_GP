@@ -19,3 +19,4 @@ gpOptim/__pycache__
 inflow/__pycache__
 inflow/bl_data
 storage/
+cfd/case*

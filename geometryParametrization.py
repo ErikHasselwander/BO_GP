@@ -93,7 +93,7 @@ def checkIfCurveSelfIntersects(curve):
 
 
 class HEXTestrigDuctCurvedFinsGeometry:  # class definition containing the geometry for a duct in terms of bezier curves
-    def __init__(self, baseGeometryDict, designVariablesDict):
+    def __init__(self, baseGeometryDict):
         # Prepare geometry storage
         self.geometry_storage = GeometryStorage("HEXTestrigDuctCurvedFinsGeometry")
         self.inlet_sketch = Sketch("inlet_section")
@@ -106,7 +106,10 @@ class HEXTestrigDuctCurvedFinsGeometry:  # class definition containing the geome
         self.RtOutlet = baseGeometryDict["RtOutlet"]
         self.deltaR_L = baseGeometryDict["deltaR_L"]
 
-
+        A_diffusor_inlet = np.pi * (
+            baseGeometryDict["RtInlet"] ** 2 - baseGeometryDict["RhInlet"] ** 2
+        )
+        baseGeometryDict["A_HEX_inlet"] = baseGeometryDict["AR"] * A_diffusor_inlet
 
         # initial sizing for hex
         self.rMidInlet = 0.5 * (self.RtInlet + self.RhInlet)
@@ -140,13 +143,13 @@ class HEXTestrigDuctCurvedFinsGeometry:  # class definition containing the geome
 
         ## Design parameters
         self.xMid = (
-            designVariablesDict["xMidFactor"] * self.LtotalDucts
+            baseGeometryDict["xMidFactor"] * self.LtotalDucts
         )  # [m] axial position for the midpoint of the hex
-        self.rMid = self.rMidOutlet + designVariablesDict["rMidFactor"] * (
+        self.rMid = self.rMidOutlet + baseGeometryDict["rMidFactor"] * (
             self.rMidInlet - self.rMidOutlet
         )  # [m] radial position for the midpoint of the hex
-        self.alpha = designVariablesDict["alpha"] * np.pi / 180
-        self.kappa = designVariablesDict["kappa"] * np.pi / 180
+        self.alpha = baseGeometryDict["alpha"] * np.pi / 180
+        self.kappa = baseGeometryDict["kappa"] * np.pi / 180
         self.rCurvedFin = baseGeometryDict["Lx"] / np.sin(self.kappa)
         self.fin_n = self.rCurvedFin * (1 - np.cos(np.arcsin(0.5 * np.sin(self.kappa))))
         self.fin_m = baseGeometryDict["Lx"] * np.tan(self.kappa / 2)
@@ -272,42 +275,42 @@ class HEXTestrigDuctCurvedFinsGeometry:  # class definition containing the geome
         self.axialLengthScale8 = np.linalg.norm(self.P_A - self.P_E)
         self.P_1 = (
             self.P_A
-            + self.P_A_tangent * designVariablesDict["lambda1"] * self.axialLengthScale1
+            + self.P_A_tangent * baseGeometryDict["lambda1"] * self.axialLengthScale1
         )
         self.P_2 = (
             self.P_B
-            + self.P_B_tangent * designVariablesDict["lambda2"] * self.axialLengthScale2
+            + self.P_B_tangent * baseGeometryDict["lambda2"] * self.axialLengthScale2
         )
         self.P_3 = (
             self.P_F
-            + self.P_F_tangent * designVariablesDict["lambda3"] * self.axialLengthScale3
+            + self.P_F_tangent * baseGeometryDict["lambda3"] * self.axialLengthScale3
         )
         self.P_4 = (
             self.P_G
-            + self.P_G_tangent * designVariablesDict["lambda4"] * self.axialLengthScale4
+            + self.P_G_tangent * baseGeometryDict["lambda4"] * self.axialLengthScale4
         )
         self.P_5 = (
             self.P_C
-            + self.P_C_tangent * designVariablesDict["lambda5"] * self.axialLengthScale5
+            + self.P_C_tangent * baseGeometryDict["lambda5"] * self.axialLengthScale5
         )
         self.P_6 = (
             self.P_D
-            + self.P_D_tangent * designVariablesDict["lambda6"] * self.axialLengthScale6
+            + self.P_D_tangent * baseGeometryDict["lambda6"] * self.axialLengthScale6
         )
         self.P_7 = (
             self.P_H
-            + self.P_H_tangent * designVariablesDict["lambda7"] * self.axialLengthScale7
+            + self.P_H_tangent * baseGeometryDict["lambda7"] * self.axialLengthScale7
         )
         self.P_8 = (
             self.P_E
-            + self.P_E_tangent * designVariablesDict["lambda8"] * self.axialLengthScale8
+            + self.P_E_tangent * baseGeometryDict["lambda8"] * self.axialLengthScale8
         )
 
         # additional bezier points
-        # self.P_9 = np.array([self.P_A[0] + designVariablesDict['lambda9']*(self.P_E[0] - self.P_A[0]), 0.5*(self.P_A[1] + self.P_E[1]) + designVariablesDict['lambda10']*self.P_A[1]])
-        # self.P_10 = np.array([self.P_B[0] + designVariablesDict['lambda11']*(self.P_F[0] - self.P_B[0]), 0.5*(self.P_B[1] + self.P_F[1]) + designVariablesDict['lambda12']*self.P_B[1]])
-        # self.P_11 = np.array([self.P_G[0] + designVariablesDict['lambda13']*(self.P_C[0] - self.P_G[0]), 0.5*(self.P_G[1] + self.P_C[1]) + designVariablesDict['lambda14']*self.P_C[1]])
-        # self.P_12 = np.array([self.P_H[0] + designVariablesDict['lambda15']*(self.P_D[0] - self.P_H[0]), 0.5*(self.P_H[1] + self.P_D[1]) + designVariablesDict['lambda16']*self.P_D[1]])
+        # self.P_9 = np.array([self.P_A[0] + baseGeometryDict['lambda9']*(self.P_E[0] - self.P_A[0]), 0.5*(self.P_A[1] + self.P_E[1]) + baseGeometryDict['lambda10']*self.P_A[1]])
+        # self.P_10 = np.array([self.P_B[0] + baseGeometryDict['lambda11']*(self.P_F[0] - self.P_B[0]), 0.5*(self.P_B[1] + self.P_F[1]) + baseGeometryDict['lambda12']*self.P_B[1]])
+        # self.P_11 = np.array([self.P_G[0] + baseGeometryDict['lambda13']*(self.P_C[0] - self.P_G[0]), 0.5*(self.P_G[1] + self.P_C[1]) + baseGeometryDict['lambda14']*self.P_C[1]])
+        # self.P_12 = np.array([self.P_H[0] + baseGeometryDict['lambda15']*(self.P_D[0] - self.P_H[0]), 0.5*(self.P_H[1] + self.P_D[1]) + baseGeometryDict['lambda16']*self.P_D[1]])
 
         # Generate Bezier curves
         self.C1, _, _ = bezierCurve(
@@ -453,7 +456,7 @@ def main():
         HInlet=0.1,
         Lx=Lx,
         AR=4,
-        DeltaR=0.8*Lx,
+        DeltaR=0.8 * Lx,
         LInlet=0.4,
         LHEX=0.2,
         LOutlet=0.4,
@@ -462,7 +465,7 @@ def main():
         l1=0.05,
         l2=0.4,
         l3=0.4,
-        l4=0.05
+        l4=0.05,
     )
     fig, ax = geom.plot_geometry()
     ax.axis("equal")
