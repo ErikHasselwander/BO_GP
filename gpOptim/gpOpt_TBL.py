@@ -275,6 +275,7 @@ def gpOpt2d_postProc(xGP, yGP, bounds, plotOpts, final=False, kernelType_=kernel
         loc = [1, 4, 5, 7, 8, 9]  # location in subplot
     else:
         logger.error("nPar should be 2, 3 or 4: given %d" % nPar)
+        return
 
     fig = plt.figure()
     for i in range(len(parID)):  # param-pair loop
@@ -703,7 +704,7 @@ def BO_update_convergence(
     nData = len(yList_)
     if nData > 1:
         [xDistList, yBestList] = my_convergence_plot(
-            xList_, yList_, path2figs, "bo_convergence_%02d" % nData
+            xList_, yList_, path2figs, "bo_convergence"
         )
 
     gpSurface_plot(xList_, yList_, nData, path2figs=path2figs)
