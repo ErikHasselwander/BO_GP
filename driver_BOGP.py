@@ -13,6 +13,23 @@ import logging
 import pathlib
 import numpy as np
 
+# %% Helper functions
+def get_current_iteration(filepath):
+    with open(filepath, 'r') as file:
+        lines = file.readlines()
+
+    # Find the last non-empty line
+    for line in reversed(lines):
+        stripped = line.strip()
+        if stripped:
+            first_value = stripped.split()[0]
+            try:
+                return int(first_value) + 1
+            except ValueError:
+                return 1
+
+    return 1  # No non-empty line found
+
 # %% logging
 # create logger
 logger = logging.getLogger("Driver")
@@ -34,10 +51,6 @@ def add_handler():
 
 add_handler()
 
-# %% SETTINGS
-iStart = 1  # Starting iteration
-iEnd = 50  # < 100
-# assert iEnd < 100
 
 # %% path
 current_dir = pathlib.Path.cwd()
@@ -50,6 +63,12 @@ CFD_DATABASE_PATH = CFD_PATH / "database.csv"
 PATH2FIGS.mkdir(parents=True, exist_ok=True)
 PATH2GPLIST.parent.mkdir(parents=True, exist_ok=True)
 CFD_PATH.mkdir(parents=True, exist_ok=True)
+
+# %% SETTINGS
+iStart = get_current_iteration(PATH2GPLIST)  # Starting iteration
+iEnd = 500  # < 100
+# assert iEnd < 100
+
 
 # %% misc.
 minInd, minR, minQ = 0, np.inf, [np.inf, np.inf]
