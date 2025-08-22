@@ -79,6 +79,10 @@ class StarManager:
             "lambda6",
             "lambda7",
             "lambda8",
+            "lambda9",
+            "lambda10",
+            "lambda11",
+            "lambda12",
             "AR",
         ]
 

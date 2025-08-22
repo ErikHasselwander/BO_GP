@@ -313,13 +313,27 @@ class HEXTestrigDuctCurvedFinsGeometry:  # class definition containing the geome
         # self.P_12 = np.array([self.P_H[0] + baseGeometryDict['lambda15']*(self.P_D[0] - self.P_H[0]), 0.5*(self.P_H[1] + self.P_D[1]) + baseGeometryDict['lambda16']*self.P_D[1]])
 
         # Generate Bezier curves
+        free_point_box_size = 2
+
+        inlet_height = self.RtInlet - self.RhInlet
+        lambda_AE = np.array([baseGeometryDict["lambda9"], baseGeometryDict["lambda10"]])
+        self.P_AE1 = np.array([self.P_A[0], np.max([self.P_A[1], self.P_E[1]]) + inlet_height * free_point_box_size])
+        self.P_AE2 = np.array([self.P_E[0], np.min([self.P_A[1], self.P_E[1]]) - inlet_height * free_point_box_size])
+        self.P_AE = self.P_AE1 + lambda_AE * (self.P_AE2 - self.P_AE1)
+
+        lambda_BF = np.array([baseGeometryDict["lambda11"], baseGeometryDict["lambda12"]])
+        self.P_BF1 = np.array([self.P_B[0], np.max([self.P_B[1], self.P_F[1]]) + inlet_height * free_point_box_size])
+        self.P_BF2 = np.array([self.P_F[0], np.min([self.P_B[1], self.P_F[1]]) - inlet_height * free_point_box_size])
+
+        self.P_BF = self.P_BF1 + lambda_BF * (self.P_BF2 - self.P_BF1)
+
         self.C1, _, _ = bezierCurve(
-            [self.P_A, self.P_1, self.P_8, self.P_E],
+            [self.P_A, self.P_1, self.P_AE, self.P_8, self.P_E],
             selfIntersectFlag=True,
             numPoints=200,
         )
         self.C2, _, _ = bezierCurve(
-            [self.P_B, self.P_2, self.P_3, self.P_F],
+            [self.P_B, self.P_2, self.P_BF, self.P_3, self.P_F],
             selfIntersectFlag=True,
             numPoints=200,
         )
