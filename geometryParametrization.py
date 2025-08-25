@@ -406,6 +406,8 @@ class HEXTestrigDuctCurvedFinsGeometry:  # class definition containing the geome
             "P_6",
             "P_7",
             "P_8",
+            "P_AE",
+            "P_BF",
         ]
         self.listOfCurveNames = []
         for i in range(16):
