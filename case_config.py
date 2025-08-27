@@ -128,9 +128,10 @@ class StarManager:
         self.resultsPath = self.casePath / "results.csv"
 
         self.results = self.__dictifyResults(self.resultsPath)
-        self.__print("Posting successful")
 
         self.__postProcess()
+
+        self.__print("Posting successful")
 
         self.data_to_file = {
             "casename": casename,
@@ -236,7 +237,7 @@ class StarManager:
                         row.append("")
 
                     key, value, unit = row
-                    results_dict[key] = self.__convertValue(value),
+                    results_dict[key] = self.__convertValue(value)
                     
         except:
             return {}
