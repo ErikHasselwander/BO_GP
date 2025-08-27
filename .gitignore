@@ -2,6 +2,7 @@ data
 figs/png
 figs/*.avi
 figs/*.pdf
+cases/*
 __pycache__
 log
 OFcase/constant/polyMesh
