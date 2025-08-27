@@ -38,7 +38,7 @@ class StarManager:
         self.starInputDict = {}
         self.starInputDict["mdot"] = 12.866  # kg/s
 
-        self.optimization_target = "overallDuctPressureLoss"
+        self.optimization_target = "pressure_drop"
         self.residual_limit = 1e-3
 
     def runSingleCase(
